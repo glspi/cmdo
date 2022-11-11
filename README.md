@@ -72,6 +72,9 @@ credentials:
   routers:
     username: ops
     password: secret123
+  # if you're scared of the credentials being in your inventory
+  super-secure:
+    prompt: true
 
 devices:
   sw1:
@@ -82,6 +85,10 @@ devices:
     address: some.host2.com
     # credentials info from credentials containers named 'routers' will be used
     credentials: routers
+  secure-rtr1:
+    address: some.host3.com
+    # credentials will be obtained at runtime
+    credentials: super-secure
 ```
 
 If you create a credential named `default`, then you can omit specifying credentials in the device configuration, this will be applied by default:
