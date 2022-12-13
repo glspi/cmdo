@@ -366,7 +366,7 @@ func (app *appCfg) outputResult(
 	name string,
 	r []interface{}) {
 	defer wg.Done()
-
+	fmt.Printf("output: %s\n", name)
 	if err := rw.WriteResponse(r, name); err != nil {
 		log.Errorf("error while writing the response: %v", err)
 	}
