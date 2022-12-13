@@ -111,6 +111,11 @@ type appCfg struct {
 	commands    string                  // commands to send
 }
 
+type respTuple struct {
+	name string
+	resp []interface{}
+}
+
 // run runs the commando.
 func (app *appCfg) run() error {
 	i := &inventory{}
@@ -126,7 +131,7 @@ func (app *appCfg) run() error {
 	}
 
 	rw := app.newResponseWriter(app.output)
-	rCh := make(chan []interface{})
+	rCh := make(chan respTuple)
 
 	if app.output == fileOutput {
 		log.SetOutput(os.Stderr)
@@ -140,13 +145,13 @@ func (app *appCfg) run() error {
 		go app.runOperations(n, d, rCh)
 	}
 
-	resps := <-rCh
+	doneCh := make(chan interface{})
 
-	for n, _ := range i.Devices {
-		go app.outputResult(wg, rw, n, resps)
-	}
+	go app.outputResult(wg, rw, rCh, doneCh)
 
 	wg.Wait()
+
+	doneCh <- nil
 
 	if app.output == fileOutput {
 		log.Infof("outputs have been saved to '%s' directory", app.outDir)
@@ -325,10 +330,13 @@ func runCommands(name string, d *device, driver *network.Driver) ([]interface{},
 func (app *appCfg) runOperations(
 	name string,
 	d *device,
-	rCh chan<- []interface{}) {
+	rCh chan<- respTuple) {
 	driver, err := app.openCoreConn(name, d)
 	if err != nil {
-		rCh <- nil
+		rCh <- respTuple{
+			name: name,
+			resp: nil,
+		}
 
 		return
 	}
@@ -337,7 +345,10 @@ func (app *appCfg) runOperations(
 
 	cfgResponses, err := runCfg(name, d, driver)
 	if err != nil {
-		rCh <- nil
+		rCh <- respTuple{
+			name: name,
+			resp: nil,
+		}
 
 		return
 	}
@@ -346,31 +357,52 @@ func (app *appCfg) runOperations(
 
 	err = runConfigs(name, d, driver)
 	if err != nil {
-		rCh <- nil
+		rCh <- respTuple{
+			name: name,
+			resp: nil,
+		}
 
 		return
 	}
 
 	cmdResponses, err := runCommands(name, d, driver)
 	if err != nil {
-		rCh <- nil
+		rCh <- respTuple{
+			name: name,
+			resp: nil,
+		}
 
 		return
 	}
 
 	responses = append(responses, cmdResponses...)
 
-	rCh <- responses
+	rCh <- respTuple{
+		name: name,
+		resp: responses,
+	}
 }
 
 func (app *appCfg) outputResult(
 	wg *sync.WaitGroup,
 	rw responseWriter,
-	name string,
-	r []interface{}) {
+	rCh chan respTuple,
+	doneCh chan interface{},
+) {
+	for {
+		select {
+		case <-doneCh:
+			return
+		case r := <-rCh:
+			if err := rw.WriteResponse(r.resp, r.name); err != nil {
+				log.Errorf("error while writing the response: %v", err)
 
-	defer wg.Done()
-	if err := rw.WriteResponse(r, name); err != nil {
-		log.Errorf("error while writing the response: %v", err)
+				// don't defer the wg.Done because it needs to always be decremented at each
+				// iteration!
+				wg.Done()
+			} else {
+				wg.Done()
+			}
+		}
 	}
 }
