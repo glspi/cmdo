@@ -138,8 +138,11 @@ func (app *appCfg) run() error {
 
 	for n, d := range i.Devices {
 		go app.runOperations(n, d, rCh)
+	}
 
-		resps := <-rCh
+	resps := <-rCh
+
+	for n, _ := range i.Devices {
 		go app.outputResult(wg, rw, n, resps)
 	}
 
@@ -365,8 +368,8 @@ func (app *appCfg) outputResult(
 	rw responseWriter,
 	name string,
 	r []interface{}) {
+
 	defer wg.Done()
-	fmt.Printf("output: %s\n", name)
 	if err := rw.WriteResponse(r, name); err != nil {
 		log.Errorf("error while writing the response: %v", err)
 	}

@@ -1,8 +1,6 @@
 package commando
 
 import (
-	"fmt"
-
 	"github.com/scrapli/scrapligo/driver/network"
 	"github.com/scrapli/scrapligo/driver/options"
 	"github.com/scrapli/scrapligo/platform"
@@ -122,7 +120,6 @@ func (app *appCfg) loadOptions(d *device) ([]util.Option, error) {
 
 func (app *appCfg) openCoreConn(name string, d *device) (*network.Driver, error) {
 	var driver *network.Driver
-	fmt.Printf("connecting to name: %s\n", name)
 	o, err := app.loadOptions(d)
 	if err != nil {
 		log.Errorf(
