@@ -20,10 +20,10 @@ Using the sudo-less installation script makes it easy to download pre-built bina
 
 ```bash
 # for linux and darwin OSes
-bash -c "$(curl -sL https://raw.githubusercontent.com/glspi/cmdo/master/get.sh)"
+bash -c "$(curl -sL https://raw.githubusercontent.com/nopg/cmdo/master/get.sh)"
 ```
 
-Windows users are encouraged to use WSL, but if it is not possible, the `.exe` file can be found in [Releases](https://github.com/glspi/cmdo/releases) section.
+Windows users are encouraged to use WSL, but if it is not possible, the `.exe` file can be found in [Releases](https://github.com/nopg/cmdo/releases) section.
 
 Linux users can leverage pre-built deb/rpm packages that are also available in the Releases section. Either download the package manually, or set `--use-pkg` flag with the install script:
 
