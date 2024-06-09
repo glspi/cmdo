@@ -1,7 +1,7 @@
 <p align=center><img src=cmdo_2.svg?sanitize=true/></p>
 
 [![Go Report](https://img.shields.io/badge/go%20report-A%2B-blue?style=flat-square&color=424f35&labelColor=bec8d2)](https://goreportcard.com/report/github.com/glspi/cmdo)
-[![Github all releases](https://img.shields.io/github/downloads/glspi/cmdo/total.svg?style=flat-square&color=424f35&labelColor=bec8d2)](https://github.com/glspi/cmdo/releases/)
+[![Github all releases](https://img.shields.io/github/downloads/glspi/cmdo/total.svg?style=flat-square&color=424f35&labelColor=bec8d2)](https://github.com/nopg/cmdo/releases/)
 ---
 
 ** FORKED FROM: https://github.com/hellt/cmdo
