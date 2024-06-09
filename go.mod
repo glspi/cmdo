@@ -1,4 +1,4 @@
-module github.com/glspi/cmdo
+module github.com/nopg/cmdo
 
 go 1.16
 
